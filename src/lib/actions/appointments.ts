@@ -34,11 +34,10 @@ export async function getAppointments() {
   }
 }
 
-// ✅ هنا التعديل الأساسي
 export async function getUserAppointments() {
   try {
     const user = await currentUser();
-    if (!user) return []; // المستخدم مش داخل، رجع فاضي
+    if (!user) return []; 
 
     const dbUser = await prisma.user.findUnique({ where: { clerkId: user.id } });
     if (!dbUser) return [];
