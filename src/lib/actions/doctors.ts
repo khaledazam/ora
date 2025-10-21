@@ -11,7 +11,7 @@ export async function getDoctors() {
       include: {
         _count: { select: { appointments: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { name: "desc" },
     });
 
     return doctors.map((doctor) => ({
@@ -28,7 +28,7 @@ interface CreateDoctorInput {
   name: string;
   email: string;
   phone: string;
-  speciality: string;
+  specialty: string;
   gender: Gender;
   isActive: boolean;
 }
@@ -40,6 +40,7 @@ export async function createDoctor(input: CreateDoctorInput) {
     const doctor = await prisma.doctor.create({
       data: {
         ...input,
+        specialty: input.specialty,
         imageUrl: generateAvatar(input.name, input.gender),
       },
     });
@@ -92,7 +93,7 @@ export async function updateDoctor(input: UpdateDoctorInput) {
       data: {
         name: input.name,
         email: input.email,
-        phone: input.phone,
+        specialty: input.specialty,
         speciality: input.speciality,
         gender: input.gender,
         isActive: input.isActive,
