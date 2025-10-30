@@ -1,9 +1,20 @@
 import { useGetDoctors } from "@/hooks/use-doctors";
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { EditIcon, MailIcon, PhoneIcon, PlusIcon, StethoscopeIcon } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import {
+  EditIcon,
+  MailIcon,
+  PhoneIcon,
+  PlusIcon,
+  StethoscopeIcon,
+} from "lucide-react";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import { Badge } from "../ui/badge";
 import AddDoctorDialog from "./AddDoctorDialog";
 import EditDoctorDialog from "./EditDoctorDialog";
@@ -35,7 +46,9 @@ function DoctorsManagement() {
               <StethoscopeIcon className="size-5 text-primary" />
               Doctors Management
             </CardTitle>
-            <CardDescription>Manage and oversee all doctors in your practice</CardDescription>
+            <CardDescription>
+              Manage and oversee all doctors in your practice
+            </CardDescription>
           </div>
 
           <Button
@@ -55,22 +68,11 @@ function DoctorsManagement() {
                 className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border/50"
               >
                 <div className="flex items-center gap-4">
-                  <Image
-                    src={doctor.imageUrl}
-                    alt={doctor.name}
-                    width={48}
-                    height={48}
-                    className="size-12 rounded-full object-cover ring-2 ring-background"
-                  />
-
+                  {/* صورة الدكتور غير موجودة */}
                   <div>
                     <div className="font-semibold">{doctor.name}</div>
                     <div className="text-sm text-muted-foreground">
-                      {doctor.speciality}
-
-                      <span className="ml-2 px-2 py-0.5 bg-muted rounded text-xs">
-                        {doctor.gender === "MALE" ? "Male" : "Female"}
-                      </span>
+                      {doctor.specialty}
                     </div>
 
                     <div className="flex items-center gap-4 mt-1">
@@ -80,7 +82,7 @@ function DoctorsManagement() {
                       </div>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <PhoneIcon className="h-3 w-3" />
-                        {doctor.phone}
+                        {doctor.phone || "N/A"}
                       </div>
                     </div>
                   </div>
@@ -88,12 +90,18 @@ function DoctorsManagement() {
 
                 <div className="flex items-center gap-3">
                   <div className="text-center">
-                    <div className="font-semibold text-primary">{doctor.appointmentCount}</div>
-                    <div className="text-xs text-muted-foreground">Appointments</div>
+                    <div className="font-semibold text-primary">
+                      {doctor.appointmentCount ?? 0}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Appointments
+                    </div>
                   </div>
 
                   {doctor.isActive ? (
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>
+                    <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                      Active
+                    </Badge>
                   ) : (
                     <Badge variant="secondary">Inactive</Badge>
                   )}
@@ -113,10 +121,13 @@ function DoctorsManagement() {
         </CardContent>
       </Card>
 
-      <AddDoctorDialog isOpen={isAddDialogOpen} onClose={() => setIsAddDialogOpen(false)} />
+      <AddDoctorDialog
+        isOpen={isAddDialogOpen}
+        onClose={() => setIsAddDialogOpen(false)}
+      />
 
       <EditDoctorDialog
-        key={selectedDoctor?.id} // advanced react
+        key={selectedDoctor?.id}
         isOpen={isEditDialogOpen}
         onClose={handleCloseEditDialog}
         doctor={selectedDoctor}
@@ -124,4 +135,5 @@ function DoctorsManagement() {
     </>
   );
 }
+
 export default DoctorsManagement;

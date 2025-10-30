@@ -35,7 +35,12 @@ function EditDoctorDialog({ doctor, isOpen, onClose }: EditDoctorDialogProps) {
 
   const handleSave = () => {
     if (editingDoctor) {
-      updateDoctorMutation.mutate({ ...editingDoctor }, { onSuccess: handleClose });
+      const sanitizedDoctor = {
+        ...editingDoctor,
+        phone: editingDoctor.phone || undefined, // ✅ يمنع الخطأ
+      };
+  
+      updateDoctorMutation.mutate(sanitizedDoctor, { onSuccess: handleClose });
     }
   };
 
@@ -67,9 +72,9 @@ function EditDoctorDialog({ doctor, isOpen, onClose }: EditDoctorDialogProps) {
                 <Label htmlFor="speciality">Speciality</Label>
                 <Input
                   id="speciality"
-                  value={editingDoctor.speciality}
+                  value={editingDoctor.specialty}
                   onChange={(e) =>
-                    setEditingDoctor({ ...editingDoctor, speciality: e.target.value })
+                    setEditingDoctor({ ...editingDoctor, specialty: e.target.value })
                   }
                 />
               </div>
@@ -89,7 +94,7 @@ function EditDoctorDialog({ doctor, isOpen, onClose }: EditDoctorDialogProps) {
               <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
-                value={editingDoctor.phone}
+                value={editingDoctor.phone??""}
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 placeholder="(555) 123-4567"
               />
@@ -99,9 +104,9 @@ function EditDoctorDialog({ doctor, isOpen, onClose }: EditDoctorDialogProps) {
               <div className="space-y-2">
                 <Label htmlFor="gender">Gender</Label>
                 <Select
-                  value={editingDoctor.gender || ""}
+                  value={""}
                   onValueChange={(value) =>
-                    setEditingDoctor({ ...editingDoctor, gender: value as Gender })
+                    setEditingDoctor({ ...editingDoctor })
                   }
                 >
                   <SelectTrigger>
