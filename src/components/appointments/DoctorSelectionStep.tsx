@@ -52,7 +52,7 @@ function DoctorSelectionStep({
                 <div className="flex-1">
                   <CardTitle className="text-lg">{dentist.name}</CardTitle>
                   <CardDescription className="text-primary font-medium">
-                    {dentist.speciality || "General Dentistry"}
+                    {dentist.specialty || "General Dentistry"}
                   </CardDescription>
                   <div className="flex items-center gap-2 mt-2">
                     <div className="flex items-center gap-1">

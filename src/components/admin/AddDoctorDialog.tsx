@@ -11,7 +11,13 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Button } from "../ui/button";
 import { formatPhoneNumber } from "@/lib/utils";
 
@@ -25,7 +31,7 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
     name: "",
     email: "",
     phone: "",
-    speciality: "",
+    specialty: "", // ✅ تم التصحيح هنا
     gender: "MALE" as Gender,
     isActive: true,
   });
@@ -38,7 +44,10 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
   };
 
   const handleSave = () => {
-    createDoctorMutation.mutate({ ...newDoctor }, { onSuccess: handleClose });
+    createDoctorMutation.mutate(
+      { ...newDoctor }, // ✅ أصبح الاسم متوافق مع CreateDoctorInput
+      { onSuccess: handleClose }
+    );
   };
 
   const handleClose = () => {
@@ -47,7 +56,7 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
       name: "",
       email: "",
       phone: "",
-      speciality: "",
+      specialty: "",
       gender: "MALE",
       isActive: true,
     });
@@ -58,7 +67,9 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Add New Doctor</DialogTitle>
-          <DialogDescription>Add a new doctor to your practice.</DialogDescription>
+          <DialogDescription>
+            Add a new doctor to your practice.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
@@ -68,16 +79,20 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
               <Input
                 id="new-name"
                 value={newDoctor.name}
-                onChange={(e) => setNewDoctor({ ...newDoctor, name: e.target.value })}
+                onChange={(e) =>
+                  setNewDoctor({ ...newDoctor, name: e.target.value })
+                }
                 placeholder="Dr. John Smith"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-speciality">Speciality *</Label>
+              <Label htmlFor="new-specialty">Specialty *</Label>
               <Input
-                id="new-speciality"
-                value={newDoctor.speciality}
-                onChange={(e) => setNewDoctor({ ...newDoctor, speciality: e.target.value })}
+                id="new-specialty"
+                value={newDoctor.specialty}
+                onChange={(e) =>
+                  setNewDoctor({ ...newDoctor, specialty: e.target.value })
+                }
                 placeholder="General Dentistry"
               />
             </div>
@@ -89,10 +104,13 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
               id="new-email"
               type="email"
               value={newDoctor.email}
-              onChange={(e) => setNewDoctor({ ...newDoctor, email: e.target.value })}
+              onChange={(e) =>
+                setNewDoctor({ ...newDoctor, email: e.target.value })
+              }
               placeholder="doctor@example.com"
             />
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="new-phone">Phone</Label>
             <Input
@@ -108,7 +126,9 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
               <Label htmlFor="new-gender">Gender</Label>
               <Select
                 value={newDoctor.gender || ""}
-                onValueChange={(value) => setNewDoctor({ ...newDoctor, gender: value as Gender })}
+                onValueChange={(value) =>
+                  setNewDoctor({ ...newDoctor, gender: value as Gender })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select gender" />
@@ -151,7 +171,7 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
             disabled={
               !newDoctor.name ||
               !newDoctor.email ||
-              !newDoctor.speciality ||
+              !newDoctor.specialty ||
               createDoctorMutation.isPending
             }
           >

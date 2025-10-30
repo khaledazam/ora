@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     domains: ["images.unsplash.com", "ora-website.vercel.app","img.clerk.com"],
   },

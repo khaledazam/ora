@@ -1,10 +1,24 @@
 "use server";
 
-import { Gender } from "@prisma/client";
 import { prisma } from "../prisma";
-import { generateAvatar } from "../utils";
 import { revalidatePath } from "next/cache";
 
+// ✅ النوع الأساسي لإنشاء دكتور
+export interface CreateDoctorInput {
+  name: string;
+  email: string;
+  phone?: string | null;
+  specialty: string;
+  bio?: string | null;
+  isActive: boolean;
+}
+
+// ✅ النوع المخصص للتحديث
+export interface UpdateDoctorInput extends Partial<CreateDoctorInput> {
+  id: string;
+}
+
+// 🩺 إحضار كل الدكاترة
 export async function getDoctors() {
   try {
     const doctors = await prisma.doctor.findMany({
@@ -19,39 +33,34 @@ export async function getDoctors() {
       appointmentCount: doctor._count.appointments,
     }));
   } catch (error) {
-    console.log("Error fetching doctors:", error);
+    console.error("Error fetching doctors:", error);
     throw new Error("Failed to fetch doctors");
   }
 }
 
-interface CreateDoctorInput {
-  name: string;
-  email: string;
-  phone: string;
-  specialty: string;
-  gender: Gender;
-  isActive: boolean;
-}
-
+// 🧑‍⚕️ إنشاء دكتور جديد
 export async function createDoctor(input: CreateDoctorInput) {
   try {
-    if (!input.name || !input.email) throw new Error("Name and email are required");
+    if (!input.name || !input.email) {
+      throw new Error("Name and email are required");
+    }
 
     const doctor = await prisma.doctor.create({
       data: {
-        ...input,
+        name: input.name,
+        email: input.email,
+        phone: input.phone ?? null,
         specialty: input.specialty,
-        imageUrl: generateAvatar(input.name, input.gender),
+        bio: input.bio ?? null,
+        isActive: input.isActive,
       },
     });
 
     revalidatePath("/admin");
-
     return doctor;
   } catch (error: any) {
     console.error("Error creating doctor:", error);
 
-    // handle unique constraint violation (email already exists)
     if (error?.code === "P2002") {
       throw new Error("A doctor with this email already exists");
     }
@@ -60,14 +69,12 @@ export async function createDoctor(input: CreateDoctorInput) {
   }
 }
 
-interface UpdateDoctorInput extends Partial<CreateDoctorInput> {
-  id: string;
-}
-
+// ✏️ تحديث بيانات دكتور
 export async function updateDoctor(input: UpdateDoctorInput) {
   try {
-    // validate
-    if (!input.name || !input.email) throw new Error("Name and email are required");
+    if (!input.name || !input.email) {
+      throw new Error("Name and email are required");
+    }
 
     const currentDoctor = await prisma.doctor.findUnique({
       where: { id: input.id },
@@ -76,12 +83,10 @@ export async function updateDoctor(input: UpdateDoctorInput) {
 
     if (!currentDoctor) throw new Error("Doctor not found");
 
-    // if email is changing, check if the new email already exists
     if (input.email !== currentDoctor.email) {
       const existingDoctor = await prisma.doctor.findUnique({
         where: { email: input.email },
       });
-
       if (existingDoctor) {
         throw new Error("A doctor with this email already exists");
       }
@@ -89,17 +94,17 @@ export async function updateDoctor(input: UpdateDoctorInput) {
 
     const doctor = await prisma.doctor.update({
       where: { id: input.id },
-      // ...input is going to trigger the unique constraint violation for email
       data: {
         name: input.name,
         email: input.email,
+        phone: input.phone ?? null,
         specialty: input.specialty,
-        speciality: input.speciality,
-        gender: input.gender,
-        isActive: input.isActive,
+        bio: input.bio ?? null,
+        isActive: input.isActive ?? true,
       },
     });
 
+    revalidatePath("/admin");
     return doctor;
   } catch (error) {
     console.error("Error updating doctor:", error);
@@ -107,6 +112,7 @@ export async function updateDoctor(input: UpdateDoctorInput) {
   }
 }
 
+// ✅ إحضار الدكاترة الفعالين فقط
 export async function getAvailableDoctors() {
   try {
     const doctors = await prisma.doctor.findMany({
